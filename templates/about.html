@@ -1,0 +1,40 @@
+{% extends "base.html"%}
+{% block title %} About {%endblock%}
+
+{%block homeActive%} class='nav-link' {%endblock%}
+{%block aboutActive%} class='nav-link active' {%endblock%}
+
+{%block head%}  
+<style>
+
+    .cover-container {
+    max-width: 42em;
+    margin: 25px;
+    background-color: #b5deff;
+    border-radius: 15px;
+    color: #414141;
+    z-index: 0;
+    position: relative;
+    left: -50px;
+    }
+
+  </style>
+  
+{%endblock%}
+
+
+{%block body%}
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+
+    <main class="px-3">
+      <h1>What is this page.</h1>
+      <p class="lead">
+          I am just doing random bullshit on this website. 
+          It's like a hobby Project.
+      </p>
+    </main>
+  
+</div>
+
+
+{%endblock%}
