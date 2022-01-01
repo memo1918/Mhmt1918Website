@@ -1,11 +1,9 @@
-from flask import Flask,render_template,redirect,url_for,request,flash
+from flask import Flask,render_template,redirect,request
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 from Analyzer import Analyzer
 
-
-
-uploadFolder = './FirstProject/uploads/'
+uploadFolder = './Mhmt1918Website/uploads/'
 ALLOWED_EXTENSIONS = {'txt','csv'}
 
 app = Flask(__name__)
@@ -46,22 +44,35 @@ def about():
 
 @app.route("/wordAnalyze",methods=['GET','POST'])
 def wordAnalyze():
-    if request.method == 'POST':
-        if 'file' not in request.files:
-            #flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
+    if request.method == 'POST': 
+        lenght = int(request.form.get("lenght"))
+        maxOutput = int(request.form.get("maxOutput"))
+        if maxOutput > 25: maxOutput = 25
 
-        if file.filename == '':
-            #flash('No selected file')
+        analyzer = Analyzer(uploadFolder,lenght,maxOutput)
+  
+        if 'file' not in request.files:
             return redirect(request.url)
+
+        file = request.files['file']     
+        
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             filename = "tempFile."+filename.split(".")[1]
             file.save(uploadFolder+filename)
             
-            tempdata = Analyzer(filename,uploadFolder).wordCounter()
-            tempdata= tempdata["Count"].to_json()
+
+            analyzer.filename = filename
+            analyzer = analyzer.wordCounter()
+            tempdata = analyzer["Count"].to_json()
+
+            return render_template('wordAnalyze.html',tempdata=tempdata)
+
+        else:
+            data = request.form.get('text_area')
+
+            analyzer = analyzer.wordCounter(data)
+            tempdata= analyzer["Count"].to_json()
 
             return render_template('wordAnalyze.html',tempdata=tempdata)
 

@@ -1,11 +1,11 @@
 {% extends "base.html"%}
-{% block title %} About {%endblock%}
+{% block title %} Word Analyze {%endblock%}
 
 {%block homeActive%} class='nav-link' {%endblock%}
 {%block wordActive%} class='nav-link active' {%endblock%}
 
 {%block head%}  
-<style>
+  <style>
     .cover-container {
     max-width: 46em;
     margin: 25px;
@@ -14,32 +14,42 @@
     color: #414141;
     z-index: 0;
     position: relative;
-    left: -50px;
+    left: -40px;
     }
 
     .btn{
         color: black;
         background-color: rgb(224, 224, 224);
     }
+    .uploadg{
+      margin-top: 5px;
+      margin-bottom: 10px;
+    }
+    .form-floating{
+
+      max-width: 170px
+    }
 
   </style>
-    
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
-    <script type="text/javascript">
+  
+  <!-- Javascript for google chart -->
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
       
+      // Getting data from flask and manuplating it
       var data = {{ tempdata|safe }};
       var data1 = JSON.stringify(data)
       var array  = JSON.parse(data1);
 
       var result = [];
-
+      // loop for creating new array without doing this googlechart makes problems IDK
       for(var i in array)
         result.push([i, array [i]]);
 
       function drawChart() {
+        // Creating DataTable for chart 
         var dataTable = new google.visualization.DataTable();
         dataTable.addColumn('string', 'Word');
         dataTable.addColumn('number', 'Count');
@@ -59,7 +69,18 @@
 
         chart.draw(dataTable,options);
       }
-    </script>
+  </script>
+   
+   <!-- Adding jquery and small script for toggling between two divs -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script> 
+  <script>
+      $(document).ready(function(){
+        $('#textBar').hide();// hide it initially
+          $('#toggleButton').on('click', function(){
+            $('#uploadBar,#textBar').toggle();
+          });
+      });
+  </script>
 
 {%endblock%}
 
@@ -69,32 +90,49 @@
 <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
 
     <main class="px-3">
-        <h1>File Upload</h1>
-        
-        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" 
-        data-bs-target=".multi-collapse" aria-expanded="false" 
-        aria-controls="inputGroupFile04 Textarea1">Toggle</button>
+      <h1>Pie Chart</h1>
         
         <form method=post enctype=multipart/form-data>
-            <div class="input-group">
-                <input type="file" name= file class="form-control multi-collapse" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
-                
+          <p>Hover to see descriptions</p>
+
+          <!-- This div contains toggle button and two inputs that required for chart -->
+        <div class="input-group">
+          <button type="button" class="btn " id ="toggleButton" title="Toggles between file upload and text input" >Toggle</button>&nbsp;
+
+            <div class="form-floating" >
+              <input type="number" name="lenght" min="0" step="1" class="form-control" value = 2 title="Word will shown if conatins more letter than this value" >
+              <label for="lenght">Lenght of words</label>
+            </div>&nbsp;
+
+            <div class="form-floating" >
+              <input type="number" name="frequency" min="0" step="1" class="form-control" value=2 title="Word will be at least this frequent">
+              <label for="frequency">Frequency</label>
+            </div>&nbsp;
+            
+            <div class="form-floating" >
+              <input type="number" name="maxOutput" min="0"  step="1" class="form-control" value=20 title="How many words will shown in the chart. Max is 25" >
+              <label for="maxOutput" class="form-label">Max Output</label>
             </div>
-        
-            <div class="mb-3 collapse multi-collapse">
-              <label for="Textarea1" class="form-label">Example textarea</label>
-              <textarea class="form-control" id="Textarea1" rows="3"></textarea>
+         </div>
+
+          <div class="uploadg" id="uploadBar">
+               <p>!! txt and csv files suported only.<br>
+                  If you are uploading csv file, please name the column with the text as "data". </p>  
+               <div> <input type="file" name= file class="form-control" ></div>
+
             </div>
+            
+            <div class="mb-3" id="textBar">
+              <label for="Textarea1" class="form-label">Text Area</label>
+              <textarea type="data" name="text_area" class="form-control" rows="5"></textarea>
+            </div>
+          
             <button class="btn " type="submit" value=Upload >Submit</button>
-        
-          </form>
-        
-       
-        <div id="piechart" style="width: 670px; height: 520px;"></div>
-    
+      </form>
+
+      <div id="piechart" style="width: 670px; height: 520px;"></div>
     </main>
   
-    
 </div>
 
 
