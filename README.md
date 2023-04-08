@@ -1,5 +1,4 @@
 # Mhmt1918Website
-!! Website is not Public yet
  
 Purpose: Increasing my web developing skills and learning
 
